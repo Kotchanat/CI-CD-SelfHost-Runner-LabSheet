@@ -884,6 +884,9 @@ jobs:
       # ================================================================
       # Step 9: Test Application
       # ================================================================
+      - name: Install jq
+        uses: dcarbone/install-jq-action@v3
+
       - name: 🧪 Test Application
         shell: bash
         run: |
@@ -1015,24 +1018,24 @@ git push origin main
 
 #### 6.3 Download และติดตั้ง Runner
 
-**เปิด PowerShell (Run as Administrator)**
-
-```powershell
-# สร้างโฟลเดอร์
-New-Item -ItemType Directory -Path C:\actions-runner -Force
-Set-Location C:\actions-runner
-
-# Download Runner (ใช้ URL จาก GitHub Settings)
-# เปลี่ยน version ตามที่ GitHub แสดง
-Invoke-WebRequest -Uri "https://github.com/actions/runner/releases/download/v2.311.0/actions-runner-win-x64-2.311.0.zip" -OutFile "actions-runner-win-x64-2.311.0.zip"
-
-# Extract
-Expand-Archive -Path .\actions-runner-win-x64-2.311.0.zip -DestinationPath . -Force
-
-# Configure Runner
-# คัดลอกคำสั่งจาก GitHub Settings → Actions → Runners
-.\config.cmd --url https://github.com/YOUR_USERNAME/nodejs-cicd-selfhosted --token YOUR_TOKEN
+**เปลี่ยน Folder ไปที่ Root ของไดร์ฟ C: หรือ D:**
+**ทำตามขั้นตอนใน Download และ Configuration ตามขั้นตอนที่ระบุบน GitHub โดยรันคำสั่งใน powershell ดังนี้**
+#### Create a folder under the drive root
 ```
+$ mkdir actions-runner; cd actions-runner
+```
+#### Download the latest runner package
+```
+$ Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.330.0/actions-runner-win-x64-2.330.0.zip -OutFile actions-runner-win-x64-2.330.0.zipCopied! # Optional: Validate the hash
+```
+#### Extract the installer
+```
+$ Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.330.0.zip", "$PWD")
+```
+### Configure
+#### Create the runner and start the configuration experience
+**คัดลอกส่วนนี้จาก GitHub**
+
 
 **ตอบคำถาม:**
 ```
@@ -1040,14 +1043,7 @@ Enter the name of the runner group: [press Enter for default]
 Enter the name of runner: my-windows-runner
 Enter any additional labels: [press Enter]
 Enter name of work folder: [press Enter for _work]
-```
-
-**ผลลัพธ์ที่ควรเห็น:**
-```
-√ Runner successfully added
-√ Runner connection is good
-
-# Settings Saved.
+Would you like to run the runner as service? (Y/N) [press Enter for N] N
 ```
 
 #### 6.4 เริ่มต้น Runner
@@ -1063,46 +1059,16 @@ Enter name of work folder: [press Enter for _work]
 ```
 √ Connected to GitHub
 
-Current runner version: '2.311.0'
-2024-12-23 10:00:00Z: Listening for Jobs
+Current runner version: '2.330.0'
+2025-12-24 07:43:21Z: Listening for Jobs
+2025-12-24 07:43:26Z: Running job: ?? Deploy Application
 ```
-
-**แบบ Service (รันอัตโนมัติ):** ⭐ **แนะนำสำหรับ Production**
-
-**ต้อง Run PowerShell as Administrator:**
-
-```powershell
-# Install service
-.\svc.cmd install
-
-# Start service
-.\svc.cmd start
-
-# Check status
-.\svc.cmd status
-```
-
-**ผลลัพธ์:**
-```
-Service actions.runner.YOUR_USERNAME-nodejs-cicd-selfhosted.my-windows-runner started successfully
-```
-
-**ดู Logs:**
-```powershell
-# View logs
-Get-Content -Path "_diag\Runner_*.log" -Wait -Tail 50
-```
-
-**Uninstall Service (ถ้าต้องการ):**
-```powershell
-.\svc.cmd stop
-.\svc.cmd uninstall
-```
+**ปล่อยให้ Runner รันเพื่อรอการ Deploy**
 
 #### 6.5 ตรวจสอบ Runner บน GitHub
 
 1. กลับไปที่ **Settings** → **Actions** → **Runners**
-2. ควรเห็น runner แสดงสถานะ **Idle** สีเขียว
+2. ควรเห็น runner แสดงสถานะ **Idle** สีเขียว  หาก fail ให้ลอง Re-run jobs นั้นใหม่อีกครั้ง
 3. Label ควรมี: `self-hosted`, `Windows`, `X64`
 
 ### บันทึกรูปผลการทดลอง
