@@ -7,7 +7,8 @@
 
 
 บันทึกผลการรันคำสั่ง docker logs nodejs-selfhosted-app
-<img width="2338" height="1090" alt="image" src="https://github.com/user-attachments/assets/2c6d1c92-1594-4700-86ba-fc2c902f7df8" />
+<img width="1976" height="380" alt="image" src="https://github.com/user-attachments/assets/00ddfdb8-e911-4452-8091-4588200bd060" />
+
 
 บันทึกผลการรัน monitor.sh
 <img width="2338" height="1090" alt="image" src="https://github.com/user-attachments/assets/a2854073-86b5-4dd1-a221-8df3731c3fae" />
